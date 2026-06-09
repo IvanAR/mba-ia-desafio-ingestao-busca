@@ -1,6 +1,11 @@
+import os
+import env  # noqa: F401
+from langchain_postgres import PGVector
+from embeddings import get_embeddings
+
 PROMPT_TEMPLATE = """
 CONTEXTO:
-{contexto}
+{context}
 
 REGRAS:
 - Responda somente com base no CONTEXTO.
@@ -20,10 +25,19 @@ Pergunta: "Você acha isso bom ou ruim?"
 Resposta: "Não tenho informações necessárias para responder sua pergunta."
 
 PERGUNTA DO USUÁRIO:
-{pergunta}
+{question}
 
 RESPONDA A "PERGUNTA DO USUÁRIO"
 """
 
-def search_prompt(question=None):
-    pass
+
+def search_prompt(q: str) -> str:
+    embeddings = get_embeddings()
+    store = PGVector(
+        embeddings=embeddings,
+        collection_name=env.PG_VECTOR_COLLECTION_NAME,
+        connection=env.DATABASE_URL,
+    )
+    docs = store.similarity_search(q, k=5)
+    c = "\n\n".join(doc.page_content for doc in docs)
+    return PROMPT_TEMPLATE.format(context=c, question=q)
