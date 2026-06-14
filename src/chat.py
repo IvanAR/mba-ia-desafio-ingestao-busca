@@ -4,14 +4,14 @@ from search import search_prompt
 model = get_chat_model()
 
 def main():
-    print("Chat started. Write 'exit' to end.\n")
+    print("Chat iniciado\n")
 
     while True:
-        user_input = input("Write yout question about Amulet Titan deck: \n").strip()
+        user_input = input("O que deseja saber hoje? \n").strip()
         if not user_input:
             continue
         if user_input.lower() == "exit":
-            print("Ending chat.")
+            print("Finalizando chat.")
             break
 
         try:
@@ -19,7 +19,7 @@ def main():
             response = model.invoke(prompt)
             print(f"Gemini: {response.content}\n", flush=True)
         except Exception as e:
-            print(f"Error: {e}\n", flush=True)
+            print(f"Erro: {e}\n", flush=True)
 
 if __name__ == "__main__":
     main()
